@@ -35,11 +35,13 @@ import models.Currency;
 import models.Wallet;
 
 public class Main {
+    static Wallet dimasWallet;
+    static Wallet ilyasWallet;
     public static void main(String[] args) {
-        Wallet dimasWallet = createNewWallet("Dima");
-        Wallet ilyasWallet = createNewWallet("Ilya");
+        dimasWallet = createNewWallet("Dima");
+        ilyasWallet = createNewWallet("Ilya");
         //todo enum для валют
-        addNewCurrency(dimasWallet, "dollar");
+        Currency dollar = addNewCurrency(dimasWallet, "dollar");
         Currency ruble = addNewCurrency(dimasWallet, "ruble");
         dimasWallet.deposit(100);
         System.out.println(dimasWallet);
@@ -49,12 +51,22 @@ public class Main {
         System.out.println(dimasWallet);
         dimasWallet.withdraw(100, ruble);
         System.out.println(dimasWallet);
-        addNewCurrency(ilyasWallet, "dollar");
-        System.out.println(ilyasWallet);
-        ilyasWallet.withdraw(100);
-        System.out.println(ilyasWallet);
-        ilyasWallet.withdraw(100, ruble);
+//        addNewCurrency(ilyasWallet, "dollar");
+//        System.out.println(ilyasWallet);
+//        ilyasWallet.withdraw(100);
+//        System.out.println(ilyasWallet);
+//        ilyasWallet.withdraw(100, ruble);
 
+        System.out.println("==================");
+        setRate(dimasWallet, "dollar", ruble, 60);
+        System.out.println(dollar.getRates());
+        System.out.println(ruble.getRates());
+        setRate(dimasWallet, "ruble", dollar, 0.1);
+        System.out.println(dollar.getRates());
+        System.out.println(ruble.getRates());
+        setRate(dimasWallet, "dollar", ruble, 60);
+        System.out.println(dollar.getRates());
+        System.out.println(ruble.getRates());
 
     }
 
@@ -74,4 +86,19 @@ public class Main {
 
         return wallet;
     }
+
+    public static void setRate(Wallet wallet, String firstCurrency, Currency secondCurrency, double rate) {
+        Currency currencyByName = wallet.findCurrencyByName(firstCurrency);
+        currencyByName.setRates(secondCurrency, rate);
+
+        secondCurrency.setRates(currencyByName, 1 / rate);
+    }
+
+//    public static Currency findCurrencyByName() {
+//        return ;
+//    }
+//
+//    public static Wallet findWalletByUserName() {
+//
+//    }
 }

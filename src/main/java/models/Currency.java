@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Currency {
     String name;
-    Map<String, Integer> rates;
+    Map<Currency, Double> rates;
 
     public Currency(String name) {
         this.name = name;
@@ -20,16 +20,22 @@ public class Currency {
         this.name = name;
     }
 
-    public Map<String, Integer> getRates() {
+    public Map<Currency, Double> getRates() {
         return rates;
     }
 
-    public void setRates(Map<String, Integer> rates) {
-        this.rates = rates;
+    public void setRates(Currency currencyInRateList, double rate) {
+        if (rate <= 0) {
+            System.out.println("You have entered wrong value");
+        } else {
+            this.getRates().put(currencyInRateList, rate);
+            System.out.println("Rate " + this.getName() + "/" + currencyInRateList.getName() +
+                    " has been established as 1 to " + this.getRates().get(currencyInRateList));
+        }
     }
 
     @Override
     public String toString() {
-        return name;
+        return this.getName();
     }
 }

@@ -94,10 +94,23 @@ public class Wallet {
                 this.getCurrenciesAmountMap().put(currency, currentSum - amount);
             }
         } else {
-            System.out.println("You have tried to withdraw the " + currency + " amount. " +
+            System.out.println("You have tried to withdraw the " + currency.getName() + " amount. " +
                     "There is no such currency in the wallet.");
         }
     }
+
+    public Currency findCurrencyByName(String name) {
+        Currency currency = this.getCurrenciesAmountMap()
+                .keySet()
+                .stream()
+                .filter(e -> Objects.equals(e.getName(), name))
+                .findFirst()
+                .orElseThrow(() -> {
+                    return new RuntimeException("No such currency in the current wallet");
+                });
+        return currency;
+    }
+
 //todo добавить цвета для текста
     public void showTotal() {
 
