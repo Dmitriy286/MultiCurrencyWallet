@@ -31,8 +31,36 @@
 //show total in dollar
 //0.66 dollar
 
+import models.Currency;
+import models.Wallet;
+
 public class Main {
     public static void main(String[] args) {
+        Wallet dimasWallet = createNewWallet("Dima");
+        Wallet ilyasWallet = createNewWallet("Ilya");
+        //todo enum для валют
+        addNewCurrency(dimasWallet, "dollar");
+        Currency ruble = addNewCurrency(dimasWallet, "ruble");
+        dimasWallet.deposit(100);
+        System.out.println(dimasWallet);
+        dimasWallet.deposit(200, ruble);
+        System.out.println(dimasWallet);
+    }
 
+    public static Currency addNewCurrency(Wallet wallet, String name) {
+        Currency currency = new Currency(name);
+        wallet.addCurrency(currency);
+        System.out.println("Currency " + currency + " has been added to your wallet");
+        System.out.println(wallet);
+        return currency;
+    }
+
+    public static Wallet createNewWallet(String userName) {
+        Wallet wallet = new Wallet(userName);
+        System.out.println("User " + userName + " has created a new wallet");
+        System.out.println(wallet);
+        System.out.println(Wallet.getWalletList());
+
+        return wallet;
     }
 }

@@ -1,47 +1,69 @@
 package models;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Wallet {
-    private int userId;
+    private static int idCount = 1;
+    private static List<Wallet> walletList;
+    private final int walletId;
+    private final String userName;
     Map<Currency, Integer> currenciesAmountMap;
 
-    public Wallet(int userId) {
-        this.userId = userId;
+    public static List<Wallet> getWalletList() {
+        return walletList;
+    }
+
+    //todo проверка на наличие кошелька с таким юзернеймом
+    public Wallet(String userName) {
+        this.walletId = idCount;
+        idCount++;
+        if (walletList == null) {
+            walletList = new ArrayList<>();
+        }
+        walletList.add(this);
+        this.userName = userName;
         this.currenciesAmountMap = new LinkedHashMap<>();
     }
 
-    public int getUserId() {
-        return userId;
+    public int getWalletId() {
+        return walletId;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public String getUserName() {
+        return userName;
     }
 
     public Map<Currency, Integer> getCurrenciesAmountMap() {
         return currenciesAmountMap;
     }
 
+    //todo возможно надо удалить этот сеттер
     public void setCurrenciesAmountMap(Map<Currency, Integer> currenciesAmountMap) {
         this.currenciesAmountMap = currenciesAmountMap;
     }
 
-    public void addCurrency(String name) {
 
+    public void addCurrency(Currency currency) {
+        this.getCurrenciesAmountMap().put(currency, 0);
     }
 
-    public void deposit(int amount) {
-        Currency first = this.getCurrenciesAmountMap()
+    private Currency lookForDefaultCurrency() {
+        Currency defaultCurrency = this.getCurrenciesAmountMap()
                 .keySet()
                 .stream()
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
-        int currentSum = this.getCurrenciesAmountMap().get(first);
-        this.getCurrenciesAmountMap().put(first, currentSum + amount);
+                .orElseThrow(() -> {
+                    System.out.println("There are no currencies in the current wallet");
+                    return new RuntimeException();
+                });
+
+        return defaultCurrency;
+    }
+
+    public void deposit(int amount) {
+        Currency defaultCurrency = lookForDefaultCurrency();
+        int currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
+        this.getCurrenciesAmountMap().put(defaultCurrency, currentSum + amount);
 
     }
 
@@ -67,9 +89,11 @@ public class Wallet {
 
     }
 
-    //этот для метода show balance
     @Override
     public String toString() {
-        return this.getCurrenciesAmountMap().toString();
+        return "WalletId: " + this.walletId + "\n" +
+                "userName: '" + this.userName + '\'' + "\n" +
+                "currenciesAmountMap: " + this.currenciesAmountMap +
+                '}';
     }
 }

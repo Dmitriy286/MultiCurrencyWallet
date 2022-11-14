@@ -5,8 +5,12 @@ import java.util.Map;
 
 public class Currency {
     String name;
-    Map<String, Integer> rates = new HashMap<>();
+    Map<String, Integer> rates;
 
+    public Currency(String name) {
+        this.name = name;
+        this.rates = new HashMap<>();
+    }
 
     public String getName() {
         return name;
@@ -22,5 +26,10 @@ public class Currency {
 
     public void setRates(Map<String, Integer> rates) {
         this.rates = rates;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
