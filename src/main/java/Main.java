@@ -45,6 +45,17 @@ public class Main {
         System.out.println(dimasWallet);
         dimasWallet.deposit(200, ruble);
         System.out.println(dimasWallet);
+        dimasWallet.withdraw(50);
+        System.out.println(dimasWallet);
+        dimasWallet.withdraw(100, ruble);
+        System.out.println(dimasWallet);
+        addNewCurrency(ilyasWallet, "dollar");
+        System.out.println(ilyasWallet);
+        ilyasWallet.withdraw(100);
+        System.out.println(ilyasWallet);
+        ilyasWallet.withdraw(100, ruble);
+
+
     }
 
     public static Currency addNewCurrency(Wallet wallet, String name) {

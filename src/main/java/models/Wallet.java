@@ -64,7 +64,6 @@ public class Wallet {
         Currency defaultCurrency = lookForDefaultCurrency();
         int currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
         this.getCurrenciesAmountMap().put(defaultCurrency, currentSum + amount);
-
     }
 
     public void deposit(int amount, Currency currency) {
@@ -74,13 +73,32 @@ public class Wallet {
         } else {
             this.getCurrenciesAmountMap().put(currency, amount);
         }
-
     }
 
-    public void withdraw() {
-        //todo аналогично deposit
+    public void withdraw(int amount) {
+        Currency defaultCurrency = lookForDefaultCurrency();
+        int currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
+        if (currentSum == 0 || currentSum <= amount) {
+            this.getCurrenciesAmountMap().put(defaultCurrency, 0);
+        } else {
+            this.getCurrenciesAmountMap().put(defaultCurrency, currentSum - amount);
+        }
     }
 
+    public void withdraw(int amount, Currency currency) {
+        if (this.getCurrenciesAmountMap().containsKey(currency)) {
+            int currentSum = this.getCurrenciesAmountMap().get(currency);
+            if (currentSum == 0 || currentSum <= amount) {
+                this.getCurrenciesAmountMap().put(currency, 0);
+            } else {
+                this.getCurrenciesAmountMap().put(currency, currentSum - amount);
+            }
+        } else {
+            System.out.println("You have tried to withdraw the " + currency + " amount. " +
+                    "There is no such currency in the wallet.");
+        }
+    }
+//todo добавить цвета для текста
     public void showTotal() {
 
     }
@@ -91,7 +109,7 @@ public class Wallet {
 
     @Override
     public String toString() {
-        return "WalletId: " + this.walletId + "\n" +
+        return "\n" + "WalletId: " + this.walletId + "\n" +
                 "userName: '" + this.userName + '\'' + "\n" +
                 "currenciesAmountMap: " + this.currenciesAmountMap +
                 '}';
