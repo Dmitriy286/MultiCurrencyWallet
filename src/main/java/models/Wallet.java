@@ -7,7 +7,7 @@ public class Wallet {
     private static List<Wallet> walletList;
     private final int walletId;
     private final String userName;
-    Map<Currency, Integer> currenciesAmountMap;
+    Map<Currency, Double> currenciesAmountMap;
 
     public static List<Wallet> getWalletList() {
         return walletList;
@@ -33,18 +33,18 @@ public class Wallet {
         return userName;
     }
 
-    public Map<Currency, Integer> getCurrenciesAmountMap() {
+    public Map<Currency, Double> getCurrenciesAmountMap() {
         return currenciesAmountMap;
     }
 
     //todo возможно надо удалить этот сеттер
-    public void setCurrenciesAmountMap(Map<Currency, Integer> currenciesAmountMap) {
+    public void setCurrenciesAmountMap(Map<Currency, Double> currenciesAmountMap) {
         this.currenciesAmountMap = currenciesAmountMap;
     }
 
 
     public void addCurrency(Currency currency) {
-        this.getCurrenciesAmountMap().put(currency, 0);
+        this.getCurrenciesAmountMap().put(currency, 0.0);
     }
 
     private Currency lookForDefaultCurrency() {
@@ -60,36 +60,36 @@ public class Wallet {
         return defaultCurrency;
     }
 
-    public void deposit(int amount) {
+    public void deposit(double amount) {
         Currency defaultCurrency = lookForDefaultCurrency();
-        int currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
+        double currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
         this.getCurrenciesAmountMap().put(defaultCurrency, currentSum + amount);
     }
 
-    public void deposit(int amount, Currency currency) {
+    public void deposit(double amount, Currency currency) {
         if (this.getCurrenciesAmountMap().containsKey(currency)) {
-            int currentSum = this.getCurrenciesAmountMap().get(currency);
+            double currentSum = this.getCurrenciesAmountMap().get(currency);
             this.getCurrenciesAmountMap().put(currency, currentSum + amount);
         } else {
             this.getCurrenciesAmountMap().put(currency, amount);
         }
     }
 
-    public void withdraw(int amount) {
+    public void withdraw(double amount) {
         Currency defaultCurrency = lookForDefaultCurrency();
-        int currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
+        Double currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
         if (currentSum == 0 || currentSum <= amount) {
-            this.getCurrenciesAmountMap().put(defaultCurrency, 0);
+            this.getCurrenciesAmountMap().put(defaultCurrency, 0.0);
         } else {
             this.getCurrenciesAmountMap().put(defaultCurrency, currentSum - amount);
         }
     }
 
-    public void withdraw(int amount, Currency currency) {
+    public void withdraw(double amount, Currency currency) {
         if (this.getCurrenciesAmountMap().containsKey(currency)) {
-            int currentSum = this.getCurrenciesAmountMap().get(currency);
-            if (currentSum == 0 || currentSum <= amount) {
-                this.getCurrenciesAmountMap().put(currency, 0);
+            Double currentSum = this.getCurrenciesAmountMap().get(currency);
+            if (currentSum == 0.0 || currentSum <= amount) {
+                this.getCurrenciesAmountMap().put(currency, 0.0);
             } else {
                 this.getCurrenciesAmountMap().put(currency, currentSum - amount);
             }
@@ -110,6 +110,21 @@ public class Wallet {
                 });
         return currency;
     }
+
+    public void convert(Currency firstCurrency, Currency secondCurrency, double amount) {
+        if (amount > this.getCurrenciesAmountMap().get(firstCurrency)) {
+            System.out.println("There is not enough amount of " + firstCurrency + " in your wallet");
+        } else {
+            double firstCurrencyNewAmount = this.getCurrenciesAmountMap().get(firstCurrency);
+            double secondCurrencyNewAmount = amount * firstCurrency.getRates().get(secondCurrency);
+            this.deposit(secondCurrencyNewAmount, secondCurrency);
+            this.withdraw(amount, firstCurrency);
+        }
+
+    }
+
+
+//    showBalance
 
 //todo добавить цвета для текста
     public void showTotal() {

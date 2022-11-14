@@ -43,14 +43,14 @@ public class Main {
         //todo enum для валют
         Currency dollar = addNewCurrency(dimasWallet, "dollar");
         Currency ruble = addNewCurrency(dimasWallet, "ruble");
-        dimasWallet.deposit(100);
+        dimasWallet.deposit(1);
         System.out.println(dimasWallet);
-        dimasWallet.deposit(200, ruble);
+        dimasWallet.deposit(100, ruble);
         System.out.println(dimasWallet);
-        dimasWallet.withdraw(50);
-        System.out.println(dimasWallet);
-        dimasWallet.withdraw(100, ruble);
-        System.out.println(dimasWallet);
+//        dimasWallet.withdraw(50);
+//        System.out.println(dimasWallet);
+//        dimasWallet.withdraw(100, ruble);
+//        System.out.println(dimasWallet);
 //        addNewCurrency(ilyasWallet, "dollar");
 //        System.out.println(ilyasWallet);
 //        ilyasWallet.withdraw(100);
@@ -61,13 +61,11 @@ public class Main {
         setRate(dimasWallet, "dollar", ruble, 60);
         System.out.println(dollar.getRates());
         System.out.println(ruble.getRates());
-        setRate(dimasWallet, "ruble", dollar, 0.1);
-        System.out.println(dollar.getRates());
-        System.out.println(ruble.getRates());
-        setRate(dimasWallet, "dollar", ruble, 60);
-        System.out.println(dollar.getRates());
-        System.out.println(ruble.getRates());
-
+        System.out.println("==================");
+        dimasWallet.convert(ruble, dollar, 80);
+        System.out.println(dimasWallet);
+        dimasWallet.withdraw(2.1, dollar);
+        System.out.println(dimasWallet);
     }
 
     public static Currency addNewCurrency(Wallet wallet, String name) {
@@ -90,7 +88,7 @@ public class Main {
     public static void setRate(Wallet wallet, String firstCurrency, Currency secondCurrency, double rate) {
         Currency currencyByName = wallet.findCurrencyByName(firstCurrency);
         currencyByName.setRates(secondCurrency, rate);
-
+//todo double везде урезать до двух знаков после запятой
         secondCurrency.setRates(currencyByName, 1 / rate);
     }
 
