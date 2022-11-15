@@ -54,8 +54,7 @@ public class Wallet {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> {
-                    System.out.println("There are no currencies in the current wallet");
-                    return new RuntimeException();
+                    return new RuntimeException("There are no currencies in the current wallet");
                 });
 
         return defaultCurrency;
@@ -116,16 +115,21 @@ public class Wallet {
         if (amount > this.getCurrenciesAmountMap().get(firstCurrency)) {
             System.out.println("There is not enough amount of " + firstCurrency + " in your wallet");
         } else {
-            double secondCurrencyNewAmount = calcCurrentCurrencyInOtherCurrency(firstCurrency, secondCurrency, amount);
+            double secondCurrencyNewAmount = calcCurrencyInOtherCurrency(firstCurrency, secondCurrency, amount);
             this.deposit(secondCurrencyNewAmount, secondCurrency);
             this.withdraw(amount, firstCurrency);
         }
 
     }
 
-    public double calcCurrentCurrencyInOtherCurrency(Currency currentCurrency, Currency otherCurrency, double amount) {
-        double currenciesRate = currentCurrency.getRates().get(otherCurrency);
-        double calculatedAmount = amount * currenciesRate;
+    public double calcCurrencyInOtherCurrency(Currency currentCurrency, Currency otherCurrency, double amount) {
+        double calculatedAmount;
+        if (currentCurrency.equals(otherCurrency)) {
+            calculatedAmount = amount;
+        } else {
+            double currenciesRate = currentCurrency.getRates().get(otherCurrency);
+            calculatedAmount = amount * currenciesRate;
+        }
         return calculatedAmount;
     }
 
@@ -142,13 +146,20 @@ public class Wallet {
         }
     }
 
-//todo добавить цвета для текста
+    //todo добавить цвета для текста
     public void showTotal() {
-
+        Currency defaultCurrency = lookForDefaultCurrency();
+        showTotal(defaultCurrency);
     }
 
-    public void showTotal(String currencyName) {
-
+    public void showTotal(Currency currency) {
+        double totalSum = 0;
+        for (Currency c : this.currenciesAmountMap.keySet()) {
+            double calculatedAmount = this.calcCurrencyInOtherCurrency(c, currency, this.currenciesAmountMap.get(c));
+            totalSum += calculatedAmount;
+        }
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        System.out.println("Total amount in " + currency + ": " + decimalFormat.format(totalSum));
     }
 
     @Override

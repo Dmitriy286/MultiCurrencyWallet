@@ -70,7 +70,12 @@ public class Main {
         System.out.println(dimasWallet);
         dimasWallet.showBalance();
         System.out.println(ilyasWallet);
-        ilyasWallet.showBalance();
+        System.out.println("=========================");
+        dimasWallet.showTotal();
+        System.out.println("=========================");
+        dimasWallet.showTotal(ruble);
+        System.out.println("=========================");
+
     }
 
     public static Currency addNewCurrency(Wallet wallet, String name) {
