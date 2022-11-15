@@ -115,16 +115,23 @@ public class Wallet {
         if (amount > this.getCurrenciesAmountMap().get(firstCurrency)) {
             System.out.println("There is not enough amount of " + firstCurrency + " in your wallet");
         } else {
-            double firstCurrencyNewAmount = this.getCurrenciesAmountMap().get(firstCurrency);
-            double secondCurrencyNewAmount = amount * firstCurrency.getRates().get(secondCurrency);
+            double secondCurrencyNewAmount = calcCurrentCurrencyInOtherCurrency(firstCurrency, secondCurrency, amount);
             this.deposit(secondCurrencyNewAmount, secondCurrency);
             this.withdraw(amount, firstCurrency);
         }
 
     }
 
+    public double calcCurrentCurrencyInOtherCurrency(Currency currentCurrency, Currency otherCurrency, double amount) {
+        double currenciesRate = currentCurrency.getRates().get(otherCurrency);
+        double calculatedAmount = amount * currenciesRate;
+        return calculatedAmount;
+    }
 
-//    showBalance
+
+    public void showBalance() {
+
+    }
 
 //todo добавить цвета для текста
     public void showTotal() {
