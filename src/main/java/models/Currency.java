@@ -1,5 +1,6 @@
 package models;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +30,10 @@ public class Currency {
             System.out.println("You have entered wrong value");
         } else {
             this.getRates().put(currencyInRateList, rate);
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
             System.out.println("Rate " + this.getName() + "/" + currencyInRateList.getName() +
-                    " has been established as 1 to " + this.getRates().get(currencyInRateList));
+                    " has been established as 1 to "
+                    + decimalFormat.format(this.getRates().get(currencyInRateList)));
         }
     }
 

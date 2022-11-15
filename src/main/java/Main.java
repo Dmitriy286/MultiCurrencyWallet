@@ -34,6 +34,8 @@
 import models.Currency;
 import models.Wallet;
 
+import java.text.DecimalFormat;
+
 public class Main {
     static Wallet dimasWallet;
     static Wallet ilyasWallet;
@@ -66,6 +68,9 @@ public class Main {
         System.out.println(dimasWallet);
         dimasWallet.withdraw(2.1, dollar);
         System.out.println(dimasWallet);
+        dimasWallet.showBalance();
+        System.out.println(ilyasWallet);
+        ilyasWallet.showBalance();
     }
 
     public static Currency addNewCurrency(Wallet wallet, String name) {
@@ -88,7 +93,6 @@ public class Main {
     public static void setRate(Wallet wallet, String firstCurrency, Currency secondCurrency, double rate) {
         Currency currencyByName = wallet.findCurrencyByName(firstCurrency);
         currencyByName.setRates(secondCurrency, rate);
-//todo double везде урезать до двух знаков после запятой
         secondCurrency.setRates(currencyByName, 1 / rate);
     }
 

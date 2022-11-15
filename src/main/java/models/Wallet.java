@@ -1,5 +1,6 @@
 package models;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Wallet {
@@ -130,7 +131,15 @@ public class Wallet {
 
 
     public void showBalance() {
-
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        if (currenciesAmountMap.size() == 0) {
+            System.out.println("There is no currency added in the wallet");
+        } else {
+            System.out.println("Your balance:");
+            for (Currency currency : this.currenciesAmountMap.keySet()) {
+                System.out.println(decimalFormat.format(this.currenciesAmountMap.get(currency)) + " " + currency + "(s)");
+            }
+        }
     }
 
 //todo добавить цвета для текста
