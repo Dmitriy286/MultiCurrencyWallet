@@ -35,32 +35,37 @@ import models.Currency;
 import models.Wallet;
 
 import java.text.DecimalFormat;
+import java.util.Scanner;
 
 public class Main {
+    private static Application application;
+    private static Scanner scanner;
     static Wallet dimasWallet;
     static Wallet ilyasWallet;
     public static void main(String[] args) {
-        dimasWallet = createNewWallet("Dima");
-        ilyasWallet = createNewWallet("Ilya");
-        //todo enum для валют
-        Currency dollar = addNewCurrency(dimasWallet, "dollar");
-        Currency ruble = addNewCurrency(dimasWallet, "ruble");
+        init();
+        run();
+    }
+
+    public static void init() {
+        application = new Application();
+        scanner = new Scanner(System.in);
+
+    }
+
+    public static void run() {
+        application.createNewWallet("Dima");
+        application.createNewWallet("Ilya");
+        dimasWallet = application.wallet;
+        Currency dollar = application.addNewCurrency(dimasWallet, "dollar");
+        Currency ruble = application.addNewCurrency(dimasWallet, "ruble");
         dimasWallet.deposit(1);
         System.out.println(dimasWallet);
         dimasWallet.deposit(100, ruble);
         System.out.println(dimasWallet);
-//        dimasWallet.withdraw(50);
-//        System.out.println(dimasWallet);
-//        dimasWallet.withdraw(100, ruble);
-//        System.out.println(dimasWallet);
-//        addNewCurrency(ilyasWallet, "dollar");
-//        System.out.println(ilyasWallet);
-//        ilyasWallet.withdraw(100);
-//        System.out.println(ilyasWallet);
-//        ilyasWallet.withdraw(100, ruble);
 
         System.out.println("==================");
-        setRate(dimasWallet, "dollar", ruble, 60);
+        application.setRate(dimasWallet, "dollar", ruble, 60);
         System.out.println(dollar.getRates());
         System.out.println(ruble.getRates());
         System.out.println("==================");
@@ -69,7 +74,6 @@ public class Main {
         dimasWallet.withdraw(2.1, dollar);
         System.out.println(dimasWallet);
         dimasWallet.showBalance();
-        System.out.println(ilyasWallet);
         System.out.println("=========================");
         dimasWallet.showTotal();
         System.out.println("=========================");
@@ -78,34 +82,7 @@ public class Main {
 
     }
 
-    public static Currency addNewCurrency(Wallet wallet, String name) {
-        Currency currency = new Currency(name);
-        wallet.addCurrency(currency);
-        System.out.println("Currency " + currency + " has been added to your wallet");
-        System.out.println(wallet);
-        return currency;
+    public static void terminate() {
+        application = null;
     }
-
-    public static Wallet createNewWallet(String userName) {
-        Wallet wallet = new Wallet(userName);
-        System.out.println("User " + userName + " has created a new wallet");
-        System.out.println(wallet);
-        System.out.println(Wallet.getWalletList());
-
-        return wallet;
-    }
-
-    public static void setRate(Wallet wallet, String firstCurrency, Currency secondCurrency, double rate) {
-        Currency currencyByName = wallet.findCurrencyByName(firstCurrency);
-        currencyByName.setRates(secondCurrency, rate);
-        secondCurrency.setRates(currencyByName, 1 / rate);
-    }
-
-//    public static Currency findCurrencyByName() {
-//        return ;
-//    }
-//
-//    public static Wallet findWalletByUserName() {
-//
-//    }
 }
