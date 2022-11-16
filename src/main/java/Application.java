@@ -49,7 +49,7 @@ public class Application {
                 //todo вынести в отдельный метод
                 while (!flag) {
                 System.out.println("Enter currency name. If you will not enter the name, " + "\n" +
-                        "the amount will be added to the first currency in your wallet");
+                        "the amount will be added to the first currency in your wallet. In this case just press Enter");
                 scanner.nextLine();
                 String depositCurrencyName = scanner.nextLine();
                 if (depositCurrencyName != "") {
@@ -90,7 +90,7 @@ public class Application {
                 break;
 
             case (6):
-
+                wallet.showBalance();
                 break;
 
             case (7):
