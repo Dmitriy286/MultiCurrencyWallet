@@ -4,8 +4,14 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 
+/**
+ * Wallet class. Contains methods to work with wallet and currencies in it.
+ */
 public class Wallet {
     private static int idCount = 1;
+    /**
+     * List with all wallets, created in runtime.
+     */
     private static List<Wallet> walletList;
     private final int walletId;
     private final String userName;
@@ -38,14 +44,19 @@ public class Wallet {
         return currenciesAmountMap;
     }
 
-    //todo возможно надо удалить этот сеттер
-    public void setCurrenciesAmountMap(Map<Currency, Double> currenciesAmountMap) {
-        this.currenciesAmountMap = currenciesAmountMap;
-    }
-
-
-    public void addCurrency(Currency currency) {
-        this.getCurrenciesAmountMap().put(currency, 0.0);
+    /**
+     * Adds new currency to the wallet.
+     * @param currencyName String name of new currency
+     */
+    public boolean addCurrency(String currencyName) {
+        boolean isCreated = false;
+        Currency currency = new Currency(currencyName);
+        if (!this.getCurrenciesAmountMap().containsKey(currency)) {
+            this.getCurrenciesAmountMap().put(currency, 0.0);
+            System.out.println("Currency " + currency + " has been added to your wallet");
+            isCreated = true;
+        }
+        return isCreated;
     }
 
     /**
@@ -66,7 +77,7 @@ public class Wallet {
 
     /**
      * Increase amount of the first currency added to wallet.
-     * @param amount int amount, which is being added to the wallet balance.
+     * @param amount double amount, which is being added to the wallet balance.
      */
     public void deposit(double amount) {
         Currency defaultCurrency = lookForDefaultCurrency();
@@ -75,10 +86,11 @@ public class Wallet {
     }
 
     /**
-     * Increase amount of the currency passed to this method.
-     * @param amount int amount, which is being added to the wallet balance.
+     *Increase amount of the currency passed to this method.
+     * @param currency Currency instance
+     * @param amount double amount, which is being added to the wallet balance
      */
-    public void deposit(double amount, Currency currency) {
+    public void deposit(Currency currency, double amount) {
         if (this.getCurrenciesAmountMap().containsKey(currency)) {
             double currentSum = this.getCurrenciesAmountMap().get(currency);
             this.getCurrenciesAmountMap().put(currency, currentSum + amount);
@@ -87,6 +99,10 @@ public class Wallet {
         }
     }
 
+    /**
+     * Decrease amount of the first currency added to wallet.
+     * @param amount double amount, which is being subtracted from the wallet balance.
+     */
     public void withdraw(double amount) {
         Currency defaultCurrency = lookForDefaultCurrency();
         Double currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
@@ -97,7 +113,12 @@ public class Wallet {
         }
     }
 
-    public void withdraw(double amount, Currency currency) {
+    /**
+     *Decrease amount of the currency passed to this method.
+     * @param currency Currency instance
+     * @param amount double amount, which is being subtracted from the wallet balance
+     */
+    public void withdraw(Currency currency, double amount) {
         if (this.getCurrenciesAmountMap().containsKey(currency)) {
             Double currentSum = this.getCurrenciesAmountMap().get(currency);
             if (currentSum == 0.0 || currentSum <= amount) {
@@ -111,6 +132,11 @@ public class Wallet {
         }
     }
 
+    /**
+     * Searches currency in the current wallet by its name.
+     * @param name String name of the currency
+     * @return instance of the currency
+     */
     public Currency findCurrencyByName(String name) {
         Currency currency = this.getCurrenciesAmountMap()
                 .keySet()
@@ -123,17 +149,30 @@ public class Wallet {
         return currency;
     }
 
+    /**
+     * Converts one currency to other, changing the balance of the wallet
+     * @param firstCurrency currency, which is converted to other currency
+     * @param secondCurrency currency, which amount grows
+     * @param amount double amount of a currency, which is converted to other
+     */
     public void convert(Currency firstCurrency, Currency secondCurrency, double amount) {
         if (amount > this.getCurrenciesAmountMap().get(firstCurrency)) {
             System.out.println("There is not enough amount of " + firstCurrency + " in your wallet");
         } else {
             double secondCurrencyNewAmount = calcCurrencyInOtherCurrency(firstCurrency, secondCurrency, amount);
-            this.deposit(secondCurrencyNewAmount, secondCurrency);
-            this.withdraw(amount, firstCurrency);
+            this.deposit(secondCurrency, secondCurrencyNewAmount);
+            this.withdraw(firstCurrency, amount);
         }
 
     }
 
+    /**
+     * Presents the amount of one currency in other currency according to their rate
+     * @param currentCurrency currency, which amount is presented in other currency
+     * @param otherCurrency measure currency
+     * @param amount double amount to be calculated
+     * @return double calculation result
+     */
     public double calcCurrencyInOtherCurrency(Currency currentCurrency, Currency otherCurrency, double amount) {
         double calculatedAmount;
         if (currentCurrency.equals(otherCurrency)) {
@@ -145,7 +184,9 @@ public class Wallet {
         return calculatedAmount;
     }
 
-
+    /**
+     * Shows the balance of all currencies in the wallet.
+     */
     public void showBalance() {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         if (currenciesAmountMap.size() == 0) {
@@ -158,12 +199,17 @@ public class Wallet {
         }
     }
 
-    //todo добавить цвета для текста
+    /**
+     * Shows total balance measured in default (firstly added) currency.
+     */
     public void showTotal() {
         Currency defaultCurrency = lookForDefaultCurrency();
         showTotal(defaultCurrency);
     }
 
+    /**
+     * Shows total balance measured in currency passed to this method.
+     */
     public void showTotal(Currency currency) {
         double totalSum = 0;
         for (Currency c : this.currenciesAmountMap.keySet()) {
