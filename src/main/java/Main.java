@@ -41,21 +41,24 @@ public class Main {
     protected static Application application;
     private static Scanner scanner;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         init();
         run();
     }
 
-    public static void init() {
+    public static void init() throws InterruptedException {
         scanner = new Scanner(System.in);
+        System.out.println("Starting application...");
+        Thread.sleep(1000);
         application = new Application(scanner);
     }
 
-    public static void run() {
+    public static void run() throws InterruptedException {
 
     }
 
-    public static void terminate() {
+    public static void terminate() throws InterruptedException {
+        System.out.println("Terminating application...");
         application = null;
         init();
         run();

@@ -3,6 +3,7 @@ package models;
 import java.text.DecimalFormat;
 import java.util.*;
 
+
 public class Wallet {
     private static int idCount = 1;
     private static List<Wallet> walletList;
@@ -14,7 +15,6 @@ public class Wallet {
         return walletList;
     }
 
-    //todo проверка на наличие кошелька с таким юзернеймом
     public Wallet(String userName) {
         this.walletId = idCount;
         idCount++;
@@ -48,6 +48,10 @@ public class Wallet {
         this.getCurrenciesAmountMap().put(currency, 0.0);
     }
 
+    /**
+     * Looks for first currency added to the wallet.
+     * @return instance of Currency
+     */
     private Currency lookForDefaultCurrency() {
         Currency defaultCurrency = this.getCurrenciesAmountMap()
                 .keySet()
@@ -60,12 +64,20 @@ public class Wallet {
         return defaultCurrency;
     }
 
+    /**
+     * Increase amount of the first currency added to wallet.
+     * @param amount int amount, which is being added to the wallet balance.
+     */
     public void deposit(double amount) {
         Currency defaultCurrency = lookForDefaultCurrency();
         double currentSum = this.getCurrenciesAmountMap().get(defaultCurrency);
         this.getCurrenciesAmountMap().put(defaultCurrency, currentSum + amount);
     }
 
+    /**
+     * Increase amount of the currency passed to this method.
+     * @param amount int amount, which is being added to the wallet balance.
+     */
     public void deposit(double amount, Currency currency) {
         if (this.getCurrenciesAmountMap().containsKey(currency)) {
             double currentSum = this.getCurrenciesAmountMap().get(currency);
