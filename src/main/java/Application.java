@@ -50,7 +50,7 @@ public class Application {
         int choiceNumber = scanInt();
 
         switch (choiceNumber) {
-            case (1):
+            case (1) -> {
                 boolean isCreated = false;
                 int caseCount = 0;
                 while (!isCreated) {
@@ -66,9 +66,8 @@ public class Application {
                         isCreated = true;
                     }
                 }
-                break;
-
-            case (2):
+            }
+            case (2) -> {
                 String depositCurrencyName = chooseCurrency("added to");
                 System.out.println("Enter the amount:");
                 double depositAmount = scanDouble();
@@ -78,9 +77,8 @@ public class Application {
                 } else {
                     wallet.deposit(depositAmount);
                 }
-                break;
-
-            case (3):
+            }
+            case (3) -> {
                 String withdrawCurrencyName = chooseCurrency("subtracted from");
                 System.out.println("Enter the amount:");
                 double withdrawAmount = scanDouble();
@@ -90,21 +88,11 @@ public class Application {
                 } else {
                     wallet.withdraw(withdrawAmount);
                 }
-                break;
-
-            case (4):
-                setRate();
-                break;
-
-            case (5):
-                convert();
-                break;
-
-            case (6):
-                wallet.showBalance();
-                break;
-
-            case (7):
+            }
+            case (4) -> setRate();
+            case (5) -> convert();
+            case (6) -> wallet.showBalance();
+            case (7) -> {
                 String currencyForTotalBalance = chooseCurrency("shown in");
                 if (!Objects.equals(currencyForTotalBalance, "")) {
                     Currency currencyByName = wallet.findCurrencyByName(currencyForTotalBalance);
@@ -112,15 +100,9 @@ public class Application {
                 } else {
                     wallet.showTotal();
                 }
-                break;
-
-            case (0):
-                Main.terminate();
-                break;
-
-            default:
-                this.chooseUserStep();
-                break;
+            }
+            case (0) -> Main.terminate();
+            default -> this.chooseUserStep();
         }
         System.out.println("==============================");
         System.out.println("Your wallet:");
@@ -260,17 +242,25 @@ public class Application {
      * in order to provide consistency.
      */
     public void setRate() {
+        boolean flag = false;
         String[] currenciesNameArray = scanStrings();
         String firstCurrency = currenciesNameArray[0];
         String secondCurrency = currenciesNameArray[1];
-        System.out.println("Enter the amount, how much ruble is worth in dollar:");
-        double rate = scanDouble();
+        while (!flag) {
+            System.out.println("Enter the amount, how much ruble is worth in dollar:");
+            double rate = scanDouble();
 
-        Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
-        Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
+            Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
+            Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
 
-        currencyOne.setRates(currencyTwo, rate);
-        currencyTwo.setRates(currencyOne, 1 / rate);
+            if (currencyOne.setRates(currencyTwo, rate)) {
+                currencyTwo.setRates(currencyOne, 1 / rate);
+                flag = true;
+            } else {
+                System.out.println("Amount has to be more than zero. Try again");
+            }
+        }
+
     }
 
     /**
@@ -284,7 +274,7 @@ public class Application {
         double convertAmount = scanDouble();
 
         Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
-        Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);;
+        Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
         wallet.convert(currencyOne, currencyTwo, convertAmount);
     }
 

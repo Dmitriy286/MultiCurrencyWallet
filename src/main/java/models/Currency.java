@@ -21,10 +21,6 @@ public class Currency {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Map<Currency, Double> getRates() {
         return rates;
     }
@@ -35,9 +31,10 @@ public class Currency {
      * @param currencyInRateList chosen currency to compare
      * @param rate double amount of chosen currency units
      */
-    public void setRates(Currency currencyInRateList, double rate) {
+    public boolean setRates(Currency currencyInRateList, double rate) {
         if (rate <= 0) {
             System.out.println("You have entered wrong value");
+            return false;
         } else {
             this.getRates().put(currencyInRateList, rate);
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
@@ -45,6 +42,7 @@ public class Currency {
                     " has been established as 1 to "
                     + decimalFormat.format(this.getRates().get(currencyInRateList)));
         }
+        return true;
     }
 
     @Override
