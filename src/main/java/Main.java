@@ -60,6 +60,7 @@ public class Main {
     public static void terminate() throws InterruptedException {
         System.out.println("Terminating application...");
         application = null;
+        Thread.sleep(1000);
         init();
         run();
     }
