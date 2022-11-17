@@ -111,11 +111,17 @@ public class Application {
                 break;
 
             case (7):
-
+                String currencyForTotalBalance = chooseCurrency("shown in");
+                if (!Objects.equals(currencyForTotalBalance, "")) {
+                    Currency currencyByName = wallet.findCurrencyByName(currencyForTotalBalance);
+                    wallet.showTotal(currencyByName);
+                } else {
+                    wallet.showTotal();
+                }
                 break;
 
             default:
-
+                this.chooseUserStep();
                 break;
         }
         System.out.println("==============================");
