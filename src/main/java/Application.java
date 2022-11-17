@@ -5,7 +5,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.stream.Collectors;
+
 
 public class Application {
     Wallet wallet;
@@ -85,11 +85,25 @@ public class Application {
                 System.out.println(secondCurrencyName);
                 System.out.println("Enter the amount of how much ruble is worth in dollar:");
                 double rate = scanDouble();
-                setRate(wallet, firstCurrencyName, secondCurrencyName, rate);
+                setRate(wallet, firstCurrencyName, secondCurrencyName, rate);//todo wallet лишний
                 break;
 
             case (5):
-
+                System.out.println("Enter first currency name:");
+                scanner.nextLine();
+                String firstCurrencyNameForConvert = scanner.nextLine();
+                System.out.println("Enter second currency name:");
+                //scanner.nextLine();//todo может быть лишний? или наоборот не хватает
+                String secondCurrencyNameForConvert = scanner.nextLine();
+                System.out.println("firstCurrencyNameForConvert:");
+                System.out.println(firstCurrencyNameForConvert);
+                System.out.println("secondCurrencyNameForConvert:");
+                System.out.println(secondCurrencyNameForConvert);
+                System.out.println("Enter the amount to convert:");
+                double convertAmount = scanDouble();
+                Currency currencyOne = wallet.findCurrencyByName(firstCurrencyNameForConvert);
+                Currency currencyTwo = wallet.findCurrencyByName(secondCurrencyNameForConvert);;
+                wallet.convert(currencyOne, currencyTwo, convertAmount);
                 break;
 
             case (6):
@@ -129,10 +143,14 @@ public class Application {
     private String chooseCurrency(String chosenAction) {
         boolean flag = false;
         String depositCurrencyName = "";
+        int count = 0;
         while (!flag) {
+            count += 1;
             System.out.println("Enter currency name. If you will not enter the name, " + "\n" +
                     "the amount will be " + chosenAction + " the first currency in your wallet. In this case just press Enter");
-            scanner.nextLine();
+            if (count == 1) {
+                scanner.nextLine();
+            }
             depositCurrencyName = scanner.nextLine();
             if (!Objects.equals(depositCurrencyName, "")) {
                 if (wallet.getCurrenciesAmountMap().keySet()
@@ -143,6 +161,7 @@ public class Application {
                     flag = true;
                 } else {
                     System.out.println("There is no such currency in the wallet");
+                    System.out.println("==============================");
                     continue;
                 }
             }
@@ -220,18 +239,19 @@ public class Application {
         }
     }
 
+    /**
+     * Inits set rate between two currencies. Automatically inits the same process for the second currency
+     * in order to provide consistency.
+     * @param wallet
+     * @param firstCurrency
+     * @param secondCurrency
+     * @param rate
+     */
     public void setRate(Wallet wallet, String firstCurrency, String secondCurrency, double rate) {
         Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
-        Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);;
+        Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
         currencyOne.setRates(currencyTwo, rate);
         currencyTwo.setRates(currencyOne, 1 / rate);
     }
 
-//    public static Currency findCurrencyByName() {
-//        return ;
-//    }
-//
-//    public static Wallet findWalletByUserName() {
-//
-//    }
 }
