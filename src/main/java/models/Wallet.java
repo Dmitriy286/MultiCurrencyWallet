@@ -2,6 +2,7 @@ package models;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -28,7 +29,12 @@ public class Wallet {
             walletList = new ArrayList<>();
         }
         walletList.add(this);
-        this.userName = userName;
+        List<String> nameList = Wallet.getWalletList().stream().map(e -> e.getUserName()).collect(Collectors.toList());
+        if (!nameList.contains(userName)) {
+            this.userName = userName;
+        } else {
+            throw new IllegalArgumentException("Wallet with such username already exists");
+        }
         this.currenciesAmountMap = new LinkedHashMap<>();
     }
 
