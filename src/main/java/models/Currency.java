@@ -50,12 +50,12 @@ public class Currency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Currency currency = (Currency) o;
-        return name.equals(currency.name) && rates.equals(currency.rates);
+        return name.equals(currency.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, rates);
+        return Objects.hash(name);
     }
 
     @Override

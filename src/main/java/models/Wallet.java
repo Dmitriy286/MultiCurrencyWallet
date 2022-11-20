@@ -2,7 +2,6 @@ package models;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -29,7 +28,7 @@ public class Wallet {
             walletList = new ArrayList<>();
         }
         walletList.add(this);
-        List<String> nameList = Wallet.getWalletList().stream().map(e -> e.getUserName()).collect(Collectors.toList());
+        List<String> nameList = Wallet.getWalletList().stream().map(Wallet::getUserName).toList();
         if (!nameList.contains(userName)) {
             this.userName = userName;
         } else {
@@ -74,9 +73,7 @@ public class Wallet {
                 .keySet()
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> {
-                    return new RuntimeException("There are no currencies in the current wallet");
-                });
+                .orElseThrow(() -> new RuntimeException("There are no currencies in the current wallet"));
 
         return defaultCurrency;
     }
@@ -149,9 +146,7 @@ public class Wallet {
                 .stream()
                 .filter(e -> Objects.equals(e.getName(), name))
                 .findFirst()
-                .orElseThrow(() -> {
-                    return new RuntimeException("No such currency in the current wallet");
-                });
+                .orElseThrow(() -> new RuntimeException("No such currency in the current wallet"));
         return currency;
     }
 
@@ -164,12 +159,16 @@ public class Wallet {
     public void convert(Currency firstCurrency, Currency secondCurrency, double amount) {
         if (amount > this.getCurrenciesAmountMap().get(firstCurrency)) {
             System.out.println("There is not enough amount of " + firstCurrency + " in your wallet");
+        } else if (amount < 0) {
+            System.out.println("You have entered negative value");
         } else {
             double secondCurrencyNewAmount = calcCurrencyInOtherCurrency(firstCurrency, secondCurrency, amount);
             this.deposit(secondCurrency, secondCurrencyNewAmount);
+            if (secondCurrencyNewAmount == 0) {
+                amount = secondCurrencyNewAmount;
+            }
             this.withdraw(firstCurrency, amount);
         }
-
     }
 
     /**
@@ -184,8 +183,14 @@ public class Wallet {
         if (currentCurrency.equals(otherCurrency)) {
             calculatedAmount = amount;
         } else {
-            double currenciesRate = currentCurrency.getRates().get(otherCurrency);
-            calculatedAmount = amount * currenciesRate;
+            try {
+                double currenciesRate = currentCurrency.getRates().get(otherCurrency);
+                calculatedAmount = amount * currenciesRate;
+            } catch (NullPointerException exception) {
+                calculatedAmount = 0.0;
+                System.out.println("Rate for this currency pair is not established");
+                exception.printStackTrace();
+            }
         }
         return calculatedAmount;
     }
@@ -208,15 +213,15 @@ public class Wallet {
     /**
      * Shows total balance measured in default (firstly added) currency.
      */
-    public void showTotal() {
+    public double showTotal() {
         Currency defaultCurrency = lookForDefaultCurrency();
-        showTotal(defaultCurrency);
+        return showTotal(defaultCurrency);
     }
 
     /**
      * Shows total balance measured in currency passed to this method.
      */
-    public void showTotal(Currency currency) {
+    public double showTotal(Currency currency) {
         double totalSum = 0;
         for (Currency c : this.currenciesAmountMap.keySet()) {
             double calculatedAmount = this.calcCurrencyInOtherCurrency(c, currency, this.currenciesAmountMap.get(c));
@@ -224,6 +229,8 @@ public class Wallet {
         }
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         System.out.println("Total amount in " + currency + ": " + decimalFormat.format(totalSum));
+
+        return totalSum;
     }
 
     @Override

@@ -2,7 +2,6 @@ import models.Currency;
 import models.Wallet;
 
 import java.util.InputMismatchException;
-import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -214,22 +213,16 @@ public class Application {
      * @param userName String username. Algorithm checks if such username already exists in the system.
      */
     public void createNewWallet(String userName) {
-        if (Wallet.getWalletList() != null) {
-            List<String> userList = Wallet.getWalletList()
-                    .stream()
-                    .map(Wallet::getUserName)
-                    .toList();
-
-            if (userList.contains(userName)) {
-                wallet = Wallet.getWalletList()
+        if (Wallet.getWalletList() != null && Wallet.getWalletList()
+                .stream()
+                .map(Wallet::getUserName)
+                .toList()
+                .contains(userName)) {
+            wallet = Wallet.getWalletList()
                         .stream()
                         .filter(e -> Objects.equals(e.getUserName(), userName))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Wallet with such username does not exist"));
-            } else {
-                wallet = new Wallet(userName);
-                System.out.println("User " + userName + " has created a new wallet");
-            }
         } else {
             wallet = new Wallet(userName);
             System.out.println("User " + userName + " has created a new wallet");
@@ -247,14 +240,14 @@ public class Application {
         String firstCurrency = currenciesNameArray[0];
         String secondCurrency = currenciesNameArray[1];
         while (!flag) {
-            System.out.println("Enter the amount, how much ruble is worth in dollar:");
+            System.out.println("Enter the amount, how much " + firstCurrency + " is worth in " + secondCurrency + ":");
             double rate = scanDouble();
 
             Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
             Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
 
             if (currencyOne.setRates(currencyTwo, rate)) {
-                currencyTwo.setRates(currencyOne, 1 / rate);
+                currencyTwo.setRates(currencyOne, 1.0 / rate);
                 flag = true;
             } else {
                 System.out.println("Amount has to be more than zero. Try again");

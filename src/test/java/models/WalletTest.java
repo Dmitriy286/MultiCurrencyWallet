@@ -1,9 +1,10 @@
 package models;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.management.InstanceNotFoundException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
@@ -104,6 +105,28 @@ class WalletTest {
         assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
     }
 
+    @Test
+    void testDepositWithExistingCurrencyAfterSettingRate() {
+        dollar.setRates(ruble, 60);
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        Map<Currency, Double> expectedCurrenciesAmountMap = new LinkedHashMap<>();
+        expectedCurrenciesAmountMap.put(ruble, 60.0);
+        expectedCurrenciesAmountMap.put(dollar, 1.0);
+        assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
+    }
+
+    @Test
+    void testDepositWithAbsentCurrency() {
+        Currency euro = new Currency("euro");
+        firstWallet.deposit(euro, 60);
+        Map<Currency, Double> expectedCurrenciesAmountMap = new LinkedHashMap<>();
+        expectedCurrenciesAmountMap.put(ruble, 0.0);
+        expectedCurrenciesAmountMap.put(dollar, 0.0);
+        expectedCurrenciesAmountMap.put(euro, 60.0);
+        assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
+    }
+
 
     @Test
     void testWithdrawWithDefaultCurrency() {
@@ -155,23 +178,133 @@ class WalletTest {
     }
 
     @Test
-    void convert() {
+    void testConvert() {
+        dollar.setRates(ruble, 60);
+
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        firstWallet.convert(dollar, ruble, 1);
+        Map<Currency, Double> expectedCurrenciesAmountMap = new LinkedHashMap<>();
+        expectedCurrenciesAmountMap.put(ruble, 120.0);
+        expectedCurrenciesAmountMap.put(dollar, 0.0);
+
+        assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
 
     }
 
     @Test
-    void calcCurrencyInOtherCurrency() {
+    void testConvertWithoutEstablishedRates() {
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        firstWallet.convert(dollar, ruble, 1);
+        Map<Currency, Double> expectedCurrenciesAmountMap = new LinkedHashMap<>();
+        expectedCurrenciesAmountMap.put(ruble, 60.0);
+        expectedCurrenciesAmountMap.put(dollar, 1.0);
+
+        assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
+
     }
 
     @Test
-    void showBalance() {
+    void testConvertWithAmountMoreThanBalance() {
+        dollar.setRates(ruble, 60);
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        firstWallet.convert(dollar, ruble, 2);
+        Map<Currency, Double> expectedCurrenciesAmountMap = new LinkedHashMap<>();
+        expectedCurrenciesAmountMap.put(ruble, 60.0);
+        expectedCurrenciesAmountMap.put(dollar, 1.0);
+
+        assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
     }
 
     @Test
-    void showTotal() {
+    void testConvertWithNegativeAmount() {
+        dollar.setRates(ruble, 60);
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        firstWallet.convert(dollar, ruble, -2);
+        Map<Currency, Double> expectedCurrenciesAmountMap = new LinkedHashMap<>();
+        expectedCurrenciesAmountMap.put(ruble, 60.0);
+        expectedCurrenciesAmountMap.put(dollar, 1.0);
+        System.out.println(firstWallet.getCurrenciesAmountMap());
+        assertEquals(expectedCurrenciesAmountMap, firstWallet.getCurrenciesAmountMap());
     }
 
     @Test
-    void testShowTotal() {
+    void testCalcCurrencyInOtherCurrency() {
+        dollar.setRates(ruble, 60);
+        double amount = 4.0;
+        double expectedValue = 240.0;
+        double actualValue = firstWallet.calcCurrencyInOtherCurrency(dollar, ruble, amount);
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    void testCalcCurrencyInOtherCurrencyWithoutEstablishedRate() {
+        double amount = 4.0;
+        double expectedValue = 0.0;
+        double actualValue = firstWallet.calcCurrencyInOtherCurrency(dollar, ruble, amount);
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    void testCalcCurrencyInSameCurrency() {
+        double amount = 4.0;
+        double expectedValue = 4.0;
+        double actualValue = firstWallet.calcCurrencyInOtherCurrency(dollar, dollar, amount);
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    void testShowTotalWithDefaultCurrency() {
+        firstWallet.addCurrency("euro");
+        Currency euro = firstWallet.findCurrencyByName("euro");
+        Currency ruble = firstWallet.findCurrencyByName("ruble");
+        Currency dollar = firstWallet.findCurrencyByName("dollar");
+        dollar.setRates(ruble, 60);
+        euro.setRates(ruble, 30);
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        firstWallet.deposit(euro, 4);
+        double expectedValue = 240;
+        double actualValue = firstWallet.showTotal();
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @Test
+    void testShowTotalWithDefinedCurrency() {
+        firstWallet.addCurrency("euro");
+        Currency euro = firstWallet.findCurrencyByName("euro");
+        Currency ruble = firstWallet.findCurrencyByName("ruble");
+        Currency dollar = firstWallet.findCurrencyByName("dollar");
+        ruble.setRates(dollar, 1.0/60);
+        euro.setRates(dollar, 1.0/2);
+        firstWallet.deposit(ruble, 60);
+        firstWallet.deposit(dollar, 1);
+        firstWallet.deposit(euro, 4);
+        double expectedValue = 4;
+        double actualValue = firstWallet.showTotal(dollar);
+        assertEquals(expectedValue, actualValue);
+    }
+
+    @AfterEach
+    void cleanUp() {
+        firstWallet = null;
+        secondWallet = null;
+        ruble = null;
+        dollar = null;
+    }
+
+    @AfterEach
+    void cleanWalletList() {
+        Wallet.getWalletList().clear();
+    }
+
+    @AfterEach
+    void cleanWalletId() throws NoSuchFieldException, IllegalAccessException {
+        Field field = Wallet.class.getDeclaredField("idCount");
+        field.setAccessible(true);
+        field.set(null, 1);
     }
 }

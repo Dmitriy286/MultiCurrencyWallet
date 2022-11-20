@@ -31,6 +31,7 @@
 //show total in dollar
 //0.66 dollar
 
+
 import java.util.Scanner;
 
 public class Main {
