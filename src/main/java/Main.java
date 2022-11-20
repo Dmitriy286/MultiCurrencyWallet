@@ -31,17 +31,18 @@
 //show total in dollar
 //0.66 dollar
 
+
 import java.util.Scanner;
 
 public class Main {
     protected static Application application;
-
+    private static Scanner scanner;
     public static void main(String[] args) throws InterruptedException {
         init();
     }
 
     public static void init() throws InterruptedException {
-        Scanner scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
         System.out.println("Starting application...");
         Thread.sleep(1000);
         application = new Application(scanner);
@@ -50,6 +51,7 @@ public class Main {
     public static void terminate() throws InterruptedException {
         System.out.println("Terminating application...");
         application = null;
+        scanner.close();
         Thread.sleep(1000);
         init();
     }
