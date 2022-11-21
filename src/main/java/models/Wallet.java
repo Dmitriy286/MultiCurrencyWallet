@@ -237,7 +237,6 @@ public class Wallet {
     public String toString() {
         return "\n" + "WalletId: " + this.walletId + "\n" +
                 "userName: '" + this.userName + '\'' + "\n" +
-                "currenciesAmountMap: " + this.currenciesAmountMap +
-                '}';
+                "currenciesAmountMap: " + this.currenciesAmountMap;
     }
 }

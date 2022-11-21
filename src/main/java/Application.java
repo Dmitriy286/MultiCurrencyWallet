@@ -13,6 +13,10 @@ public class Application {
     Wallet wallet;
     Scanner scanner;
 
+    public Application() {
+
+    }
+
     public Application(Scanner scanner) throws InterruptedException {
         this.scanner = scanner;
         System.out.println("==============================");
@@ -22,7 +26,7 @@ public class Application {
                         "your wallet will be provided. " +
                          "\n" + "In other case new wallet will be created");
         String userName = scanner.nextLine();
-        this.createNewWallet(userName);
+        this.wallet = createNewWallet(userName);
         this.chooseUserStep();
     }
 
@@ -43,6 +47,7 @@ public class Application {
         System.out.println("To view the whole balance of all currencies, enter 6");
         System.out.println("To view total amount in any currency, enter 7");
         System.out.println("To quit, enter 0");
+        System.out.println("To close program, enter 111");
 
         System.out.println("==============================");
 
@@ -101,6 +106,10 @@ public class Application {
                 }
             }
             case (0) -> Main.terminate();
+            case (111) -> {
+                Main.terminateAndClose();
+                return;
+            }
             default -> this.chooseUserStep();
         }
         System.out.println("==============================");
@@ -108,6 +117,7 @@ public class Application {
         System.out.println(wallet);
         System.out.println("==============================");
         System.out.println("If you want to quit, enter 0");
+        System.out.println("If you want to close program, enter 111");
         System.out.println("If you want to go to main menu, enter any other number");
         System.out.println("==============================");
 
@@ -115,6 +125,8 @@ public class Application {
 
         if (lastChoiceNumber == 0) {
             Main.terminate();
+        } else if (lastChoiceNumber == 111) {
+            Main.terminateAndClose();
         } else {
             this.chooseUserStep();
         }
@@ -212,7 +224,8 @@ public class Application {
      * to "wallet" variable.
      * @param userName String username. Algorithm checks if such username already exists in the system.
      */
-    public void createNewWallet(String userName) {
+    public static Wallet createNewWallet(String userName) {
+        Wallet wallet;
         if (Wallet.getWalletList() != null && Wallet.getWalletList()
                 .stream()
                 .map(Wallet::getUserName)
@@ -227,6 +240,8 @@ public class Application {
             wallet = new Wallet(userName);
             System.out.println("User " + userName + " has created a new wallet");
         }
+
+        return wallet;
     }
 
     /**
@@ -253,7 +268,6 @@ public class Application {
                 System.out.println("Amount has to be more than zero. Try again");
             }
         }
-
     }
 
     /**
