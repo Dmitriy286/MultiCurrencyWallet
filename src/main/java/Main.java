@@ -55,4 +55,10 @@ public class Main {
         Thread.sleep(1000);
         init();
     }
+
+    public static void terminateAndClose() {
+        System.out.println("Terminating application...");
+        application = null;
+        scanner.close();
+    }
 }
