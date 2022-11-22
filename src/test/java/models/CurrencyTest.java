@@ -1,7 +1,9 @@
 package models;
 
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -13,8 +15,8 @@ public class CurrencyTest {
     static Currency currentCurrency;
     static Currency currencyInRateList;
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
         currentCurrency = new Currency("dollar");
         currencyInRateList = new Currency("ruble");
     }

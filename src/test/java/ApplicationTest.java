@@ -26,7 +26,6 @@ class ApplicationTest {
     void testChooseDefinedCurrency() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String forScan = "\n" +
                 "dollar";
-
         application = new Application();
         application.scanner = new Scanner(forScan);
         application.wallet = new Wallet("Elon");
@@ -44,7 +43,6 @@ class ApplicationTest {
     void testChooseDefaultCurrency() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         String forScan = "\n" +
                 "\n";
-
         application = new Application();
         application.scanner = new Scanner(forScan);
         application.wallet = new Wallet("Elon");
@@ -63,7 +61,7 @@ class ApplicationTest {
         Field field = Main.class.getDeclaredField("scanner");
         field.setAccessible(true);
         field.set(null, new Scanner(System.in));
-        String forScan = "Jeff\n 111";
+        String forScan = "Jeff\n 0";
         scanner = new Scanner(forScan);
         application = new Application(scanner);
 

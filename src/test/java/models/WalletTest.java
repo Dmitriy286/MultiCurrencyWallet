@@ -45,8 +45,7 @@ class WalletTest {
 
     @Test
     void testAddWalletWithExistingUserName() {
-        AtomicReference<Wallet> wallet = null;
-        assertThrows(IllegalArgumentException.class, () -> wallet.set(new Wallet("Jeff")));
+        assertThrows(IllegalArgumentException.class, () -> new Wallet("Jeff"));
     }
 
     @Test
