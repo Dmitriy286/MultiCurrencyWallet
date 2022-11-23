@@ -32,6 +32,7 @@ show total
 show total in dollar
 0.66 dollar
 
+***
 
 Console application, which allows handling your bank account.
 You can create new wallet, add currencies, set currencies rates, 
