@@ -6,13 +6,16 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Currency class
+ * Currency class. Represents currency entity with its name and exchange rates for other currencies.
  */
 public class Currency {
-    String name;
-    Map<Currency, Double> rates;
+    private final String name;
+    private Map<Currency, Double> rates;
 
     public Currency(String name) {
+        if (Objects.equals(name, "")) {
+            throw new IllegalArgumentException("Currency name can't be empty string");
+        }
         this.name = name;
         this.rates = new HashMap<>();
     }

@@ -4,16 +4,18 @@ import models.Wallet;
 import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 
 /**
  * Application class with the main program's logic.
  */
 public class Application {
-    public Wallet wallet;
-    public Scanner scanner;
+    protected Wallet wallet;
+    protected Scanner scanner;
 
+    /**
+     * Empty constructor for testing purposes.
+     */
     public Application() {
 
     }
@@ -27,7 +29,7 @@ public class Application {
                         "your wallet will be provided. " +
                          "\n" + "In other case new wallet will be created");
         String userName = this.scanner.nextLine();
-        this.wallet = createNewWallet(userName);
+        this.wallet = Application.createNewWallet(userName);
         this.chooseUserStep();
     }
 
@@ -65,8 +67,10 @@ public class Application {
                         this.scanner.nextLine();
                     }
                     String currencyName = this.scanner.nextLine();
-                    if (!this.wallet.addCurrency(currencyName)) {
-                        System.out.println("Such currency has already been added to your wallet. Try other currency");
+                    if (this.checkIfCurrencyExistsByName(currencyName)) {
+                        System.out.println("Such currency has already been added to your wallet. Try other currency name");
+                    } else if (Objects.equals(currencyName, "")){
+                        System.out.println("Currency name can't be empty string. Try again");
                     } else {
                         isCreated = true;
                     }
@@ -151,11 +155,7 @@ public class Application {
             }
             depositCurrencyName = this.scanner.nextLine();
             if (!Objects.equals(depositCurrencyName, "")) {
-                if (this.wallet.getCurrenciesAmountMap().keySet()
-                        .stream()
-                        .map(Currency::getName)
-                        .toList()
-                        .contains(depositCurrencyName)) {
+                if (this.checkIfCurrencyExistsByName(depositCurrencyName)) {
                     flag = true;
                 } else {
                     System.out.println("There is no such currency in the wallet");
@@ -221,14 +221,14 @@ public class Application {
     }
 
     /**
-     *
-     * @return
+     * Scans input from keyboard until user will enter the existing currency name (according to current wallet)
+     * @return String currency name
      */
     private String stringScannerCycle() {
         String scannedString;
         while (true) {
             scannedString = this.scanner.nextLine();
-            if (this.checkIfCurrencyExists(scannedString)) {
+            if (this.checkIfCurrencyExistsByName(scannedString)) {
                 break;
             } else {
                 System.out.println("There is no such currency in the wallet. Try again:");
@@ -238,11 +238,11 @@ public class Application {
     }
 
     /**
-     *
-     * @param currencyName
-     * @return
+     * Checks if currency with such username has been already added to the current wallet.
+     * @param currencyName String name of currency, which user enters from the keyboard
+     * @return boolean value, true if such currency has been already added to the current wallet
      */
-    private boolean checkIfCurrencyExists(String currencyName) {
+    private boolean checkIfCurrencyExistsByName(String currencyName) {
         boolean contains = this.wallet.getCurrenciesAmountMap().keySet()
                 .stream()
                 .map(Currency::getName)
@@ -259,11 +259,7 @@ public class Application {
      */
     public static Wallet createNewWallet(String userName) {
         Wallet wallet;
-        if (Wallet.getWalletList() != null && Wallet.getWalletList()
-                .stream()
-                .map(Wallet::getUserName)
-                .toList()
-                .contains(userName)) {
+        if (Wallet.getWalletList() != null && Wallet.checkIfWalletUserNameExists(userName)) {
             wallet = Wallet.getWalletList()
                         .stream()
                         .filter(e -> Objects.equals(e.getUserName(), userName))
