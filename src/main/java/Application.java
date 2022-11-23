@@ -10,9 +10,12 @@ import java.util.Scanner;
  * Application class with the main program's logic.
  */
 public class Application {
-    Wallet wallet;
-    Scanner scanner;
+    protected Wallet wallet;
+    protected Scanner scanner;
 
+    /**
+     * Empty constructor for testing purposes.
+     */
     public Application() {
 
     }
@@ -25,8 +28,8 @@ public class Application {
         System.out.println("Enter your username. If there is a wallet with such username, " +
                         "your wallet will be provided. " +
                          "\n" + "In other case new wallet will be created");
-        String userName = scanner.nextLine();
-        this.wallet = createNewWallet(userName);
+        String userName = this.scanner.nextLine();
+        this.wallet = Application.createNewWallet(userName);
         this.chooseUserStep();
     }
 
@@ -46,12 +49,12 @@ public class Application {
         System.out.println("If you want to convert any amount of any currency to other currency, enter 5");
         System.out.println("To view the whole balance of all currencies, enter 6");
         System.out.println("To view total amount in any currency, enter 7");
-        System.out.println("To quit, enter 0");
-        System.out.println("To close program, enter 111");
+        System.out.println("To close your wallet, enter 8");
+        System.out.println("To quit program, enter 0");
 
         System.out.println("==============================");
 
-        int choiceNumber = scanInt();
+        int choiceNumber = this.scanInt();
 
         switch (choiceNumber) {
             case (1) -> {
@@ -61,52 +64,54 @@ public class Application {
                     caseCount += 1;
                     System.out.println("Enter currency name:");
                     if (caseCount == 1) {
-                        scanner.nextLine();
+                        this.scanner.nextLine();
                     }
-                    String currencyName = scanner.nextLine();
-                    if (!wallet.addCurrency(currencyName)) {
-                        System.out.println("Such currency has already been added to your wallet. Try other currency");
+                    String currencyName = this.scanner.nextLine();
+                    if (this.checkIfCurrencyExistsByName(currencyName)) {
+                        System.out.println("Such currency has already been added to your wallet. Try other currency name");
+                    } else if (Objects.equals(currencyName, "")){
+                        System.out.println("Currency name can't be empty string. Try again");
                     } else {
                         isCreated = true;
                     }
                 }
             }
             case (2) -> {
-                String depositCurrencyName = chooseCurrency("added to");
+                String depositCurrencyName = this.chooseCurrency("added to");
                 System.out.println("Enter the amount:");
-                double depositAmount = scanDouble();
+                double depositAmount = this.scanDouble();
                 if (!Objects.equals(depositCurrencyName, "")) {
                     Currency currencyByName = wallet.findCurrencyByName(depositCurrencyName);
-                    wallet.deposit(currencyByName, depositAmount);
+                    this.wallet.deposit(currencyByName, depositAmount);
                 } else {
-                    wallet.deposit(depositAmount);
+                    this.wallet.deposit(depositAmount);
                 }
             }
             case (3) -> {
-                String withdrawCurrencyName = chooseCurrency("subtracted from");
+                String withdrawCurrencyName = this.chooseCurrency("subtracted from");
                 System.out.println("Enter the amount:");
-                double withdrawAmount = scanDouble();
+                double withdrawAmount = this.scanDouble();
                 if (!Objects.equals(withdrawCurrencyName, "")) {
-                    Currency currencyByName = wallet.findCurrencyByName(withdrawCurrencyName);
-                    wallet.withdraw(currencyByName, withdrawAmount);
+                    Currency currencyByName = this.wallet.findCurrencyByName(withdrawCurrencyName);
+                    this.wallet.withdraw(currencyByName, withdrawAmount);
                 } else {
-                    wallet.withdraw(withdrawAmount);
+                    this.wallet.withdraw(withdrawAmount);
                 }
             }
-            case (4) -> setRate();
-            case (5) -> convert();
+            case (4) -> this.setRate();
+            case (5) -> this.convert();
             case (6) -> wallet.showBalance();
             case (7) -> {
-                String currencyForTotalBalance = chooseCurrency("shown in");
+                String currencyForTotalBalance = this.chooseCurrency("shown in");
                 if (!Objects.equals(currencyForTotalBalance, "")) {
-                    Currency currencyByName = wallet.findCurrencyByName(currencyForTotalBalance);
-                    wallet.showTotal(currencyByName);
+                    Currency currencyByName = this.wallet.findCurrencyByName(currencyForTotalBalance);
+                    this.wallet.showTotal(currencyByName);
                 } else {
-                    wallet.showTotal();
+                    this.wallet.showTotal();
                 }
             }
-            case (0) -> Main.terminate();
-            case (111) -> {
+            case (8) -> Main.terminate();
+            case (0) -> {
                 Main.terminateAndClose();
                 return;
             }
@@ -116,16 +121,16 @@ public class Application {
         System.out.println("Your wallet:");
         System.out.println(wallet);
         System.out.println("==============================");
-        System.out.println("If you want to quit, enter 0");
-        System.out.println("If you want to close program, enter 111");
+        System.out.println("If you want to close wallet, enter 8");
+        System.out.println("If you want to quit program, enter 0");
         System.out.println("If you want to go to main menu, enter any other number");
         System.out.println("==============================");
 
         int lastChoiceNumber = scanInt();
 
-        if (lastChoiceNumber == 0) {
+        if (lastChoiceNumber == 8) {
             Main.terminate();
-        } else if (lastChoiceNumber == 111) {
+        } else if (lastChoiceNumber == 0) {
             Main.terminateAndClose();
         } else {
             this.chooseUserStep();
@@ -146,15 +151,11 @@ public class Application {
             System.out.println("Enter currency name. If you will not enter the name, " + "\n" +
                     "the amount will be " + chosenAction + " the first currency in your wallet. In this case just press Enter");
             if (count == 1) {
-                scanner.nextLine();
+                this.scanner.nextLine();
             }
-            depositCurrencyName = scanner.nextLine();
+            depositCurrencyName = this.scanner.nextLine();
             if (!Objects.equals(depositCurrencyName, "")) {
-                if (wallet.getCurrenciesAmountMap().keySet()
-                        .stream()
-                        .map(Currency::getName)
-                        .toList()
-                        .contains(depositCurrencyName)) {
+                if (this.checkIfCurrencyExistsByName(depositCurrencyName)) {
                     flag = true;
                 } else {
                     System.out.println("There is no such currency in the wallet");
@@ -175,11 +176,11 @@ public class Application {
         int result;
         while (true) {
             try {
-                result = scanner.nextInt();
+                result = this.scanner.nextInt();
                 break;
             } catch (InputMismatchException exception) {
                 System.out.println("You have to enter a number, please retry:");
-                scanner.nextLine();
+                this.scanner.nextLine();
             }
         }
         return result;
@@ -193,11 +194,11 @@ public class Application {
         double result;
         while (true) {
             try {
-                result = scanner.nextDouble();
+                result = this.scanner.nextDouble();
                 break;
             } catch (InputMismatchException exception) {
                 System.out.println("You have to enter a number, please retry:");
-                scanner.nextLine();
+                this.scanner.nextLine();
             }
         }
         return result;
@@ -210,13 +211,45 @@ public class Application {
     private String[] scanStrings() {
         String[] stringArray = new String[2];
         System.out.println("Enter first currency name:");
-        scanner.nextLine();
-        String firstString = scanner.nextLine();
+        this.scanner.nextLine();
+        String firstString = this.stringScannerCycle();
         System.out.println("Enter second currency name:");
-        String secondString = scanner.nextLine();
+        String secondString = this.stringScannerCycle();
         stringArray[0] = firstString;
         stringArray[1] = secondString;
         return stringArray;
+    }
+
+    /**
+     * Scans input from keyboard until user will enter the existing currency name (according to current wallet)
+     * @return String currency name
+     */
+    private String stringScannerCycle() {
+        String scannedString;
+        while (true) {
+            scannedString = this.scanner.nextLine();
+            if (this.checkIfCurrencyExistsByName(scannedString)) {
+                break;
+            } else {
+                System.out.println("There is no such currency in the wallet. Try again:");
+            }
+        }
+        return scannedString;
+    }
+
+    /**
+     * Checks if currency with such username has been already added to the current wallet.
+     * @param currencyName String name of currency, which user enters from the keyboard
+     * @return boolean value, true if such currency has been already added to the current wallet
+     */
+    private boolean checkIfCurrencyExistsByName(String currencyName) {
+        boolean contains = this.wallet.getCurrenciesAmountMap().keySet()
+                .stream()
+                .map(Currency::getName)
+                .toList()
+                .contains(currencyName);
+
+        return contains;
     }
 
     /**
@@ -226,11 +259,7 @@ public class Application {
      */
     public static Wallet createNewWallet(String userName) {
         Wallet wallet;
-        if (Wallet.getWalletList() != null && Wallet.getWalletList()
-                .stream()
-                .map(Wallet::getUserName)
-                .toList()
-                .contains(userName)) {
+        if (Wallet.getWalletList() != null && Wallet.checkIfWalletUserNameExists(userName)) {
             wallet = Wallet.getWalletList()
                         .stream()
                         .filter(e -> Objects.equals(e.getUserName(), userName))
@@ -251,12 +280,12 @@ public class Application {
      */
     public void setRate() {
         boolean flag = false;
-        String[] currenciesNameArray = scanStrings();
+        String[] currenciesNameArray = this.scanStrings();
         String firstCurrency = currenciesNameArray[0];
         String secondCurrency = currenciesNameArray[1];
         while (!flag) {
             System.out.println("Enter the amount, how much " + firstCurrency + " is worth in " + secondCurrency + ":");
-            double rate = scanDouble();
+            double rate = this.scanDouble();
 
             Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
             Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
@@ -280,9 +309,9 @@ public class Application {
         System.out.println("Enter the amount to convert:");
         double convertAmount = scanDouble();
 
-        Currency currencyOne = wallet.findCurrencyByName(firstCurrency);
-        Currency currencyTwo = wallet.findCurrencyByName(secondCurrency);
-        wallet.convert(currencyOne, currencyTwo, convertAmount);
+        Currency currencyOne = this.wallet.findCurrencyByName(firstCurrency);
+        Currency currencyTwo = this.wallet.findCurrencyByName(secondCurrency);
+        this.wallet.convert(currencyOne, currencyTwo, convertAmount);
     }
 
 }

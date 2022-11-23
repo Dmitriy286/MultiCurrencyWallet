@@ -15,11 +15,7 @@ public class Wallet {
     private static List<Wallet> walletList;
     private final int walletId;
     private final String userName;
-    Map<Currency, Double> currenciesAmountMap;
-
-    public static List<Wallet> getWalletList() {
-        return walletList;
-    }
+    private Map<Currency, Double> currenciesAmountMap;
 
     public Wallet(String userName) {
         this.walletId = idCount;
@@ -28,13 +24,16 @@ public class Wallet {
             walletList = new ArrayList<>();
         }
         walletList.add(this);
-        List<String> nameList = Wallet.getWalletList().stream().map(Wallet::getUserName).toList();
-        if (!nameList.contains(userName)) {
+        if (!Wallet.checkIfWalletUserNameExists(userName)) {
             this.userName = userName;
         } else {
             throw new IllegalArgumentException("Wallet with such username already exists");
         }
         this.currenciesAmountMap = new LinkedHashMap<>();
+    }
+
+    public static List<Wallet> getWalletList() {
+        return walletList;
     }
 
     public int getWalletId() {
@@ -47,6 +46,21 @@ public class Wallet {
 
     public Map<Currency, Double> getCurrenciesAmountMap() {
         return currenciesAmountMap;
+    }
+
+    /**
+     * Checks if wallet with such username already exists.
+     * @param userName String username, which user enters from the keyboard
+     * @return boolean value, true if such username has been already used
+     */
+    public static boolean checkIfWalletUserNameExists(String userName) {
+        boolean contains = Wallet.getWalletList()
+                .stream()
+                .map(Wallet::getUserName)
+                .toList()
+                .contains(userName);
+
+        return contains;
     }
 
     /**
@@ -200,7 +214,7 @@ public class Wallet {
      */
     public void showBalance() {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        if (currenciesAmountMap.size() == 0) {
+        if (currenciesAmountMap.isEmpty()) {
             System.out.println("There is no currency added in the wallet");
         } else {
             System.out.println("Your balance:");

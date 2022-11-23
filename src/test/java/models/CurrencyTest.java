@@ -1,7 +1,6 @@
 package models;
 
-
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -13,10 +12,15 @@ public class CurrencyTest {
     static Currency currentCurrency;
     static Currency currencyInRateList;
 
-    @BeforeAll
-    public static void setUp() {
+    @BeforeEach
+    public void setUp() {
         currentCurrency = new Currency("dollar");
         currencyInRateList = new Currency("ruble");
+    }
+
+    @Test
+    public void testCreateNewCurrencyWithEmptyUserName() {
+        assertThrows(IllegalArgumentException.class, () -> new Currency(""));
     }
 
     @Test
@@ -54,16 +58,4 @@ public class CurrencyTest {
         assertEquals(expected, rates);
     }
 
-
-//    public void testChangingOfOtherCurrencyRates() {
-//        Currency currentCurrency = new Currency("dollar");
-//        Currency currencyInRateList = new Currency("ruble");
-//        double rate = 60;
-//        currentCurrency.setRates(currencyInRateList, rate);
-//        Map<Currency, Double> rates = currentCurrency.getRates();
-//
-//        Map<Currency, Double> expected = new HashMap<>();
-//        expected.put(currencyInRateList, rate);
-//        assertEquals(expected, rates);
-//    }
 }
