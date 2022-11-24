@@ -41,7 +41,7 @@ public class CurrencyTest {
 
     @Test
     public void testGetEmptyRates() {
-        Map<Currency, Double> rates = currentCurrency.getRates();
+        Map<Currency, Double> rates = currentCurrency.getCurrenciesExchangeRates();
         Map<Currency, Double> expected = new HashMap<>();
         assertEquals(expected, rates);
     }
@@ -51,7 +51,7 @@ public class CurrencyTest {
         double rate = 60;
 
         currentCurrency.setRates(currencyInRateList, rate);
-        Map<Currency, Double> rates = currentCurrency.getRates();
+        Map<Currency, Double> rates = currentCurrency.getCurrenciesExchangeRates();
 
         Map<Currency, Double> expected = new HashMap<>();
         expected.put(currencyInRateList, rate);

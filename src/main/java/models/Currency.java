@@ -9,23 +9,23 @@ import java.util.Objects;
  * Currency class. Represents currency entity with its name and exchange rates for other currencies.
  */
 public class Currency {
-    private final String name;
-    private Map<Currency, Double> rates;
+    private final String currencyName;
+    private Map<Currency, Double> currenciesExchangeRates;
 
-    public Currency(String name) {
-        if (Objects.equals(name, "")) {
+    public Currency(String currencyName) {
+        if (Objects.equals(currencyName, "")) {
             throw new IllegalArgumentException("Currency name can't be empty string");
         }
-        this.name = name;
-        this.rates = new HashMap<>();
+        this.currencyName = currencyName;
+        this.currenciesExchangeRates = new HashMap<>();
     }
 
-    public String getName() {
-        return name;
+    public String getCurrencyName() {
+        return currencyName;
     }
 
-    public Map<Currency, Double> getRates() {
-        return rates;
+    public Map<Currency, Double> getCurrenciesExchangeRates() {
+        return currenciesExchangeRates;
     }
 
     /**
@@ -39,11 +39,11 @@ public class Currency {
             System.out.println("You have entered wrong value");
             return false;
         } else {
-            this.getRates().put(currencyInRateList, rate);
+            this.getCurrenciesExchangeRates().put(currencyInRateList, rate);
             DecimalFormat decimalFormat = new DecimalFormat("#.##");
-            System.out.println("Rate " + this.getName() + "/" + currencyInRateList.getName() +
+            System.out.println("Rate " + this.getCurrencyName() + "/" + currencyInRateList.getCurrencyName() +
                     " has been established as 1 to "
-                    + decimalFormat.format(this.getRates().get(currencyInRateList)));
+                    + decimalFormat.format(this.getCurrenciesExchangeRates().get(currencyInRateList)));
         }
         return true;
     }
@@ -53,16 +53,16 @@ public class Currency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Currency currency = (Currency) o;
-        return name.equals(currency.name);
+        return currencyName.equals(currency.currencyName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(currencyName);
     }
 
     @Override
     public String toString() {
-        return this.getName();
+        return this.getCurrencyName();
     }
 }

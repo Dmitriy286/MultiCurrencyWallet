@@ -245,7 +245,7 @@ public class Application {
     private boolean checkIfCurrencyExistsByName(String currencyName) {
         boolean contains = this.wallet.getCurrenciesAmountMap().keySet()
                 .stream()
-                .map(Currency::getName)
+                .map(Currency::getCurrencyName)
                 .toList()
                 .contains(currencyName);
 

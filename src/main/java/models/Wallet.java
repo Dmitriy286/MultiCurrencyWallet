@@ -144,7 +144,7 @@ public class Wallet {
                 this.getCurrenciesAmountMap().put(currency, currentSum - amount);
             }
         } else {
-            System.out.println("You have tried to withdraw the " + currency.getName() + " amount. " +
+            System.out.println("You have tried to withdraw the " + currency.getCurrencyName() + " amount. " +
                     "There is no such currency in the wallet.");
         }
     }
@@ -158,7 +158,7 @@ public class Wallet {
         Currency currency = this.getCurrenciesAmountMap()
                 .keySet()
                 .stream()
-                .filter(e -> Objects.equals(e.getName(), name))
+                .filter(e -> Objects.equals(e.getCurrencyName(), name))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No such currency in the current wallet"));
         return currency;
@@ -198,7 +198,7 @@ public class Wallet {
             calculatedAmount = amount;
         } else {
             try {
-                double currenciesRate = currentCurrency.getRates().get(otherCurrency);
+                double currenciesRate = currentCurrency.getCurrenciesExchangeRates().get(otherCurrency);
                 calculatedAmount = amount * currenciesRate;
             } catch (NullPointerException exception) {
                 calculatedAmount = 0.0;
